@@ -4,6 +4,7 @@ from __future__ import annotations
 import threading
 import logging
 import warnings
+import math
 from typing import Any, Union, Callable
 import atexit
 import weakref
@@ -438,6 +439,8 @@ class Gamepad:
 
         if abs(event.value) < self.deadzone:
             value = 0.0
+        else:
+            value = math.copysign((abs(value) - self.deadzone)/(1.0-self.deadzone), value)
         self._send_stick(stick, axis, value)
 
     def _handle_hat(self, event: pygame.event.Event):
