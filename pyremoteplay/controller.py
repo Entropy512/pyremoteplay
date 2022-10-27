@@ -9,6 +9,7 @@ from collections import deque
 from enum import IntEnum, auto
 import time
 import asyncio
+import binascii
 
 from .stream_packets import FeedbackEvent, FeedbackHeader, ControllerState, StickState
 from .errors import RemotePlayError
@@ -27,7 +28,7 @@ class Controller:
         RELEASE = auto()
         TAP = auto()
 
-    MAX_EVENTS = 5
+    MAX_EVENTS = 16
     STATE_INTERVAL_MAX_MS = 0.200
     STATE_INTERVAL_MIN_MS = 0.100
 
@@ -152,7 +153,12 @@ class Controller:
 
     def _send_event(self):
         """Send controller button event."""
-        data = b"".join(self._event_buf)
+        data = bytearray(0)
+        for event in self._event_buf:
+            dbuf = bytearray(event.length)
+            event.pack(dbuf)
+            data = data + dbuf
+        _LOGGER.error("send_event with length: %s, data is %s", len(data), binascii.hexlify(data))
         if not data:
             return
         self._session.stream.send_feedback(
@@ -161,13 +167,11 @@ class Controller:
         self._sequence_event = (self._sequence_event + 1) % 0xFFFF
 
     def _add_event_buffer(self, event: FeedbackEvent):
-        """Append event to beginning of byte buffer.
+        """Append event to beginning of event buffer.
         Oldest event is at the end and is removed
         when buffer is full and a new event is added
         """
-        buf = bytearray(FeedbackEvent.LENGTH)
-        event.pack(buf)
-        self._event_buf.appendleft(buf)
+        self._event_buf.appendleft(event)
 
     def _button(
         self,

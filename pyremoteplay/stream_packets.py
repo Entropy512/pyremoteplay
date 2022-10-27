@@ -965,7 +965,6 @@ class FeedbackState(PacketSection):
 class FeedbackEvent(PacketSection):
     """Feedback Event."""
 
-    LENGTH = 3
     PREFIX = 0x80
 
     class Type(IntEnum):
@@ -1000,7 +999,18 @@ class FeedbackEvent(PacketSection):
 
     def pack(self, buf: bytearray):
         """Pack compiled bytes."""
-        pack_into("!BBB", buf, 0, self.PREFIX, self.button_id, self.state)
+        if(self.button_id >= 0x8C):
+            pack_into("!BB", buf, 0, self.PREFIX, self.button_id)
+        else:
+            pack_into("!BBB", buf, 0, self.PREFIX, self.button_id, self.state)
+
+    @property
+    def length(self) -> int:
+        """Return length of packed event"""
+        if(self.button_id >= 0x8C):
+            return 2
+        else:
+            return 3
 
     @property
     def state(self) -> int:
