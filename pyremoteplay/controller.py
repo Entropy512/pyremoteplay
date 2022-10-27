@@ -148,7 +148,7 @@ class Controller:
         self._session.stream.send_feedback(
             FeedbackHeader.Type.STATE, self._sequence_state, state=self.stick_state
         )
-        self._sequence_state += 1
+        self._sequence_state = (self._sequence_state + 1) % 0xFFFF
 
     def _send_event(self):
         """Send controller button event."""
@@ -158,7 +158,7 @@ class Controller:
         self._session.stream.send_feedback(
             FeedbackHeader.Type.EVENT, self._sequence_event, data=data
         )
-        self._sequence_event += 1
+        self._sequence_event = (self._sequence_event + 1) % 0xFFFF
 
     def _add_event_buffer(self, event: FeedbackEvent):
         """Append event to beginning of byte buffer.
