@@ -441,7 +441,7 @@ class Gamepad:
             value = 0.0
         else:
             value = math.copysign((abs(value) - self.deadzone)/(1.0-self.deadzone), value)
-            value = 0.5*value + 0.5*math.pow(value,3)
+            value = 0.75*value + 0.25*math.pow(value,3)
         self._send_stick(stick, axis, value)
 
     def _handle_hat(self, event: pygame.event.Event):
