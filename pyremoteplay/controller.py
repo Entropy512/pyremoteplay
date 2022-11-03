@@ -149,7 +149,10 @@ class Controller:
         self._session.stream.send_feedback(
             FeedbackHeader.Type.STATE, self._sequence_state, state=self.stick_state
         )
-        self._sequence_state = (self._sequence_state + 1) % 0xFFFF
+        self._sequence_state += 1
+        if(self._sequence_state >= 0xFFFF):
+            _LOGGER.error("stick sequence wraparound")
+            self._sequence_state = self._sequence_state % 0xFFFF
 
     def _send_event(self):
         """Send controller button event."""
@@ -164,7 +167,10 @@ class Controller:
         self._session.stream.send_feedback(
             FeedbackHeader.Type.EVENT, self._sequence_event, data=data
         )
-        self._sequence_event = (self._sequence_event + 1) % 0xFFFF
+        self._sequence_event += 1
+        if(self._sequence_event >= 0xFFFF):
+            _LOGGER.error("event sequence wraparound")
+            self._sequence_event = self._sequence_event % 0xFFFF
 
     def _add_event_buffer(self, event: FeedbackEvent):
         """Append event to beginning of event buffer.
