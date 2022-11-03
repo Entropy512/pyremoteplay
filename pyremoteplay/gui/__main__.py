@@ -13,7 +13,7 @@ def main():
         level = logging.DEBUG
     else:
         level = logging.INFO
-    logging.basicConfig(level=level)
+    logging.basicConfig(format='%(asctime)s %(levelname)s: %(name)s: %(message)s', level=level)
 
     QtWidgets.QApplication.setHighDpiScaleFactorRoundingPolicy(
         QtCore.Qt.HighDpiScaleFactorRoundingPolicy.Floor
