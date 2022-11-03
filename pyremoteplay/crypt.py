@@ -208,7 +208,7 @@ class BaseCipher:
         if self.base_gmac_key is None:
             raise CryptError("Base GMAC Key is None")
         self.current_key = get_gmac_key(self.index, self.base_gmac_key, self.base_iv)
-        # _LOGGER.debug("Cipher: %s, Index: %s", self.name, self.index)
+        _LOGGER.error("Cipher: %s, Index: %s", self.name, self.index)
         return self.current_key
 
     def get_gmac(self, data: bytes, key_pos: int):
@@ -282,7 +282,7 @@ class LocalCipher(BaseCipher):
     def advance_key_pos(self, advance_by: int):
         """Advance key pos by data length."""
         self._key_pos += advance_by
-        _LOGGER.debug("Advancing key pos by %s to: %s", advance_by, self.key_pos)
+        #_LOGGER.debug("Advancing key pos by %s to: %s", advance_by, self.key_pos)
 
     @property
     def key_pos(self) -> int:
